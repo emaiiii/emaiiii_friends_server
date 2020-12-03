@@ -12,14 +12,16 @@ const database = {
 	users: [
 		{
 			id: '1',
-			name: 'Erik',
+			fName: 'Erik',
+			lName: 'Mai',
 			email: 'airwickmai@gmail.com',
 			password: 'cookies',
 			joined: new Date(),
 		},
 		{
 			id: '2',
-			name: 'Mitchell',
+			fName: 'Mitchell',
+			lName: 'Doan',
 			email: 'mdoan@gmail.com',
 			password: 'cakes',
 			joined: new Date(),
@@ -44,11 +46,12 @@ app.post('/signin', (req, res) => {
 
 /*register post request*/
 app.post('/register', (req, res) => {
-	const {email, name, password} = req.body;
+	const {fName, lName, email, password} = req.body;
 
 	database.users.push({
 		id: '3',
-		name: name,
+		fName: fName,
+		lName: lName,
 		email: email,
 		password: password,
 		joined: new Date()
