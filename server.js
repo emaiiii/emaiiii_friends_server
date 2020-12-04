@@ -64,12 +64,18 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
 	const {fName, lName, email} = req.body;
 
-	db('users').insert({
-		fname: fName,
-		lname: lName,
-		email: email,
-		joined: new Date()
-	}).then(console.log)
+	db('users')
+		.returning('*')
+		.insert({
+			fname: fName,
+			lname: lName,
+			email: email,
+			joined: new Date()
+	})
+	.then(user => {
+		res.json(user[0]);
+	})
+	.catch(err => res.status(400).json('Error: unable to register'));
 	/*database.users.push({
 		id: '3',
 		fName: fName,
@@ -78,8 +84,6 @@ app.post('/register', (req, res) => {
 		password: password,
 		joined: new Date()
 	})*/
-
-	res.json("Success: user registered");
 })
 
 /*profile get request*/
