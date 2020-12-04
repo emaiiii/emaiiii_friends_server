@@ -2,6 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const knex = require('knex');
+
+// link to database
+const db = knex({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'postgres',
+    password : 'postgres',
+    database : 'friends'
+  }
+});
+
+db.select('*').from('users').then(data => {
+	console.log(data);
+});
 
 const app = express();
 app.use(bodyParser.json());
@@ -37,7 +53,7 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
 	if(req.body.email === database.users[0].email &&
 		req.body.password === database.users[0].password){
-		res.json('Success');
+		res.json('Success: logged in');
 	}
 	else{
 		res.status(400).json('Error: unsuccessful sign in');
@@ -46,18 +62,24 @@ app.post('/signin', (req, res) => {
 
 /*register post request*/
 app.post('/register', (req, res) => {
-	const {fName, lName, email, password} = req.body;
+	const {fName, lName, email} = req.body;
 
-	database.users.push({
+	db('users').insert({
+		fname: fName,
+		lname: lName,
+		email: email,
+		joined: new Date()
+	}).then(console.log)
+	/*database.users.push({
 		id: '3',
 		fName: fName,
 		lName: lName,
 		email: email,
 		password: password,
 		joined: new Date()
-	})
+	})*/
 
-	res.json(database.users[database.users.length-1]);
+	res.json("Success: user registered");
 })
 
 /*profile get request*/
