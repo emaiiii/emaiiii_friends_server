@@ -23,84 +23,79 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-/*harcoded database for testing purposes*/
-const database = {
-	users: [
-		{
-			id: '1',
-			fName: 'Erik',
-			lName: 'Mai',
-			email: 'airwickmai@gmail.com',
-			password: 'cookies',
-			joined: new Date(),
-		},
-		{
-			id: '2',
-			fName: 'Mitchell',
-			lName: 'Doan',
-			email: 'mdoan@gmail.com',
-			password: 'cakes',
-			joined: new Date(),
-		}
-	]
-}
-
-app.get('/', (req, res) => {
-	res.send(database.users);
-})
-
 /*sign in post request*/
 app.post('/signin', (req, res) => {
-	if(req.body.email === database.users[0].email &&
-		req.body.password === database.users[0].password){
-		res.json('Success: logged in');
-	}
-	else{
-		res.status(400).json('Error: unsuccessful sign in');
-	}
+	db.select('email', 'hash').from('login')
+		.where('email', '=', req.body.email)
+		.then(data => {
+			const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+
+			if(isValid){
+				return db.select('*').from('users')
+					.where('email', '=', req.body.email)
+					.then(user => {
+						res.json(user[0]);
+					})
+					.catch(err => res.status(400).json("Error: unable to get user"))
+			}
+			else{
+				res.status(400).json("Error: wrong credentials");
+			}
+		})
+		.catch(err => res.status(400).json("Error: wrong credentials"))
 })
 
 /*register post request*/
 app.post('/register', (req, res) => {
-	const {fName, lName, email} = req.body;
+	const {fName, lName, email, password} = req.body;
 
-	db('users')
-		.returning('*')
-		.insert({
-			fname: fName,
-			lname: lName,
-			email: email,
-			joined: new Date()
-	})
-	.then(user => {
-		res.json(user[0]);
+	var hash = bcrypt.hashSync(password);
+
+	// use transcation if you want to make multiple operations on databases
+	// if one fails then they all fail
+	db.transaction(trx => {
+		trx.insert({
+			hash: hash,
+			email: email
+		})
+		.into('login')
+		.returning('email')
+		.then(loginEmail => {
+			return trx('users')
+				.returning('*')
+				.insert({
+					fname: fName,
+					lname: lName,
+					email: loginEmail[0],
+					joined: new Date()
+			})
+			.then(user => {
+				res.json(user[0]);
+			})
+		})
+		.then(trx.commit)
+		.catch(trx.rollback)
 	})
 	.catch(err => res.status(400).json('Error: unable to register'));
-	/*database.users.push({
-		id: '3',
-		fName: fName,
-		lName: lName,
-		email: email,
-		password: password,
-		joined: new Date()
-	})*/
 })
 
 /*profile get request*/
+/*code can be adjusted to implement any functionality
+that requires you to get users*/
 app.get('/profile/:id', (req, res) => {
 	const {id} = req.params;
-	let found = false;
 
-	database.users.forEach(user => {
-		if(user.id === id) {
-			found = true;
-			return res.json(user);
-		}
-	});
+	db.select('*').from('users').where({id})
+		.then(user => {
+			if(user.length){
+				res.json(user[0]);
+			}
+			else{ 
+				res.status(400).json("Error: user not found");
+			}
 
-	if (!found){
-		res.status.json("Error: user not found");
-	}
+		})
+		.catch(err => res.status(400).json("Error: user not found"))
 })
 
 app.listen(3000, () => {
