@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
 
+const register = require('./controllers/register');
+const signin = require('./controllers/signin');
+const profile = require('./controllers/profile');
+
+
 // link to database
 const db = knex({
   client: 'pg',
@@ -23,85 +28,16 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-/*harcoded database for testing purposes*/
-const database = {
-	users: [
-		{
-			id: '1',
-			fName: 'Erik',
-			lName: 'Mai',
-			email: 'airwickmai@gmail.com',
-			password: 'cookies',
-			joined: new Date(),
-		},
-		{
-			id: '2',
-			fName: 'Mitchell',
-			lName: 'Doan',
-			email: 'mdoan@gmail.com',
-			password: 'cakes',
-			joined: new Date(),
-		}
-	]
-}
-
-app.get('/', (req, res) => {
-	res.send(database.users);
-})
-
 /*sign in post request*/
-app.post('/signin', (req, res) => {
-	if(req.body.email === database.users[0].email &&
-		req.body.password === database.users[0].password){
-		res.json('Success: logged in');
-	}
-	else{
-		res.status(400).json('Error: unsuccessful sign in');
-	}
-})
+app.post('/signin', (req, res) => {signin.handleSignIn(req, res, db, bcrypt)})
 
 /*register post request*/
-app.post('/register', (req, res) => {
-	const {fName, lName, email} = req.body;
-
-	db('users')
-		.returning('*')
-		.insert({
-			fname: fName,
-			lname: lName,
-			email: email,
-			joined: new Date()
-	})
-	.then(user => {
-		res.json(user[0]);
-	})
-	.catch(err => res.status(400).json('Error: unable to register'));
-	/*database.users.push({
-		id: '3',
-		fName: fName,
-		lName: lName,
-		email: email,
-		password: password,
-		joined: new Date()
-	})*/
-})
+app.post('/register', (req, res) => {register.handleRegister(req, res, db, bcrypt)})
 
 /*profile get request*/
-app.get('/profile/:id', (req, res) => {
-	const {id} = req.params;
-	let found = false;
-
-	database.users.forEach(user => {
-		if(user.id === id) {
-			found = true;
-			return res.json(user);
-		}
-	});
-
-	if (!found){
-		res.status.json("Error: user not found");
-	}
-})
+/*code can be adjusted to implement any functionality
+that requires you to get users*/
+app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, db)})
 
 app.listen(3000, () => {
 	console.log("app is running on port 3000");
