@@ -1,10 +1,10 @@
 const handleRegister = (req, res, db, bcrypt) => {
-	const {fName, lName, email, password} = req.body;
+	const {fName, lName, email, username, password} = req.body;
 
 	// make sure all input fields are filled out before continuing with request
 	// handle only white space inputs
-	if(fName.trim().length && lName.trim().length 
-		&& email.trim().length && password.trim().length){
+	if(fName.trim().length && lName.trim().length && email.trim().length 
+		&& username.trim().length && password.trim().length){
 		var hash = bcrypt.hashSync(password);
 
 		// use transcation if you want to make multiple operations on databases
@@ -23,6 +23,7 @@ const handleRegister = (req, res, db, bcrypt) => {
 						fname: fName,
 						lname: lName,
 						email: loginEmail[0],
+						username: username,
 						joined: new Date()
 				})
 				.then(user => {
