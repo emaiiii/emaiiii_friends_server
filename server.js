@@ -7,16 +7,28 @@ const knex = require('knex');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
+const post = require('./controllers/post');
+const searchPost = require('./controllers/searchPost');
+const searchUser = require('./controllers/searchUser');
 
 
 // link to database
+// const db = knex({
+//   client: 'pg',
+//   connection: {
+//     host : '127.0.0.1',
+//     user : 'postgres',
+//     password : 'postgres',
+//     database : 'friends'
+//   }
+// });
 const db = knex({
   client: 'pg',
   connection: {
     host : '127.0.0.1',
-    user : 'postgres',
+    user : 'mitchdoan',
     password : 'postgres',
-    database : 'friends'
+    database : 'Friends'
   }
 });
 
@@ -33,6 +45,15 @@ app.post('/signin', (req, res) => {signin.handleSignIn(req, res, db, bcrypt)})
 
 /*register post request*/
 app.post('/register', (req, res) => {register.handleRegister(req, res, db, bcrypt)})
+
+/*post post request*/
+app.post('/post', (req, res) => {post.handlePost(req, res, db)})
+
+/*searchPost post request*/
+app.post('/searchPost', (req, res) => {searchPost.handleSearchPost(req, res, db)})
+
+/*searchUser post request*/
+app.post('/searchUser', (req, res) => {searchUser.handleSearchUser(req, res, db)})
 
 /*profile get request*/
 /*code can be adjusted to implement any functionality
