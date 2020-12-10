@@ -10,6 +10,7 @@ const profile = require('./controllers/profile');
 const post = require('./controllers/post');
 const searchPost = require('./controllers/searchPost');
 const searchUser = require('./controllers/searchUser');
+const updateStat = require('./controllers/updateStat');
 
 
 // link to database
@@ -54,6 +55,9 @@ app.post('/searchPost', (req, res) => {searchPost.handleSearchPost(req, res, db)
 
 /*searchUser post request*/
 app.post('/searchUser', (req, res) => {searchUser.handleSearchUser(req, res, db)})
+
+/*updateStat post request*/
+app.post('/updateStat', (req, res) => {updateStat.handleUpdateStat(req, res, db)})
 
 /*profile get request*/
 /*code can be adjusted to implement any functionality

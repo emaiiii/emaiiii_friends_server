@@ -1,10 +1,6 @@
 const handlePost = (req, res, db) => {
 	const {uid, ttl, cap, tags} = req.body;
 
-	var ind_tag = tags.split(" ");
-	var pid;
-	var len = ind_tag.length;
-
 	// make sure all input fields are filled out before continuing with request
 	// handle only white space inputs
 	if(ttl.trim().length && cap.trim().length){
@@ -22,21 +18,25 @@ const handlePost = (req, res, db) => {
 			.into('photos')
 			.returning('photo_id')
 			.then(photoID => {
-				ind_tag.forEach(element =>
-					trx('photo_tag')
-						.insert({
-							photo_id: photoID[0]	
-						})	
-					)
 				return trx('photo_stats')
 					.returning('*')
 					.insert({
 						photo_id: photoID[0]
+					})
+				.then(photo_stats => {
+					// var ind_tag = tags.split(" ");
+					// var len = ind_tag.length;
+					// for(var i = 0; i < len; i++){
+					// 	console.log("hi");
+					// 	trx.insert({
+					// 		photo_id: photoID[0],
+					// 		tag: ind_tag[i]
+					// 	})
+					// 	.into('photo_tag')
+					// }
+					res.json(photo_stats[0]);
 				})
-				.then(results => {
-					res.json(results[0]);
-				})
-			})
+			})	
 			.then(trx.commit)
 			.catch(trx.rollback)
 		})
