@@ -11,6 +11,8 @@ const post = require('./controllers/post');
 const searchPost = require('./controllers/searchPost');
 const searchUser = require('./controllers/searchUser');
 const updateStat = require('./controllers/updateStat');
+const userTag = require('./controllers/userTag');
+const photoTag = require('./controllers/photoTag');
 
 
 // link to database
@@ -58,6 +60,12 @@ app.post('/searchUser', (req, res) => {searchUser.handleSearchUser(req, res, db)
 
 /*updateStat post request*/
 app.post('/updateStat', (req, res) => {updateStat.handleUpdateStat(req, res, db)})
+
+/* userTag post request */
+app.post('/userTag', (req, res) => {userTag.handleUserTag(req, res, db)})
+
+/* photoTag post request */
+app.post('/photoTag', (req, res) => {photoTag.handlePhotoTag(req, res, db)})
 
 /*profile get request*/
 /*code can be adjusted to implement any functionality
