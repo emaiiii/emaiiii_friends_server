@@ -11,6 +11,8 @@ const follow = require('./controllers/follow');
 const unfollow = require('./controllers/unfollow');
 const profile = require('./controllers/profile');
 const post = require('./controllers/post');
+const postcomment = require('./controllers/comment');
+const getcomments = require('./controllers/getcomments');
 const mainposts = require('./controllers/mainposts');
 
 
@@ -53,6 +55,12 @@ app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, db)})
 
 /*post post request*/
 app.post('/post', (req, res) => {post.handlePost(req, res, db)})
+
+/*comment post request*/
+app.post('/comment', (req, res) => {postcomment.handleComment(req, res, db)})
+
+/*comment get request*/
+app.get('/getcomments', (req, res) => {getcomments.handleGetComment(req, res, db)})
 
 /*mainposts get request*/
 app.get('/mainposts', (req, res) => {mainposts.handleMainPosts(req, res, db)})
