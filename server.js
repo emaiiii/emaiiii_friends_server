@@ -4,11 +4,12 @@ const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
 
-const register = require('./controllers/register');
 const signin = require('./controllers/signin');
-const profile = require('./controllers/profile');
+const register = require('./controllers/register');
 const follow = require('./controllers/follow');
 const unfollow = require('./controllers/unfollow');
+const profile = require('./controllers/profile');
+const post = require('./controllers/post');
 
 
 // link to database
@@ -46,6 +47,9 @@ app.post('/unfollow/:unfollowed_id/:unfollower_id', (req, res) => {unfollow.hand
 /*code can be adjusted to implement any functionality
 that requires you to get users*/
 app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, db)})
+
+/*post post request*/
+app.post('/post', (req, res) => {post.handlePost(req, res, db)})
 
 app.listen(3000, () => {
 	console.log("app is running on port 3000");
