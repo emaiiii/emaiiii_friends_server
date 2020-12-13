@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
+const fileUpload = require('express-fileupload');
 
 const signin = require('./controllers/signin');
 const register = require('./controllers/register');
@@ -10,6 +11,7 @@ const follow = require('./controllers/follow');
 const unfollow = require('./controllers/unfollow');
 const profile = require('./controllers/profile');
 const post = require('./controllers/post');
+const mainposts = require('./controllers/mainposts');
 
 
 // link to database
@@ -30,6 +32,7 @@ db.select('*').from('users').then(data => {
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(fileUpload());
 
 /*sign in post request*/
 app.post('/signin', (req, res) => {signin.handleSignIn(req, res, db, bcrypt)})
@@ -50,6 +53,9 @@ app.get('/profile/:id', (req, res) => {profile.handleProfileGet(req, res, db)})
 
 /*post post request*/
 app.post('/post', (req, res) => {post.handlePost(req, res, db)})
+
+/*mainposts get request*/
+app.get('/mainposts', (req, res) => {mainposts.handleMainPosts(req, res, db)})
 
 app.listen(3000, () => {
 	console.log("app is running on port 3000");
